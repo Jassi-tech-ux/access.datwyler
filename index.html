@@ -3,56 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Restringido</title>
+    <title>Acceso Seguro Planta</title>
     <style>
-        /* Estilos anteriores se mantienen... */
-        body { font-family: sans-serif; background-color: #1a1a1a; color: white; text-align: center; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; text-align: center; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .hidden { display: none !important; }
+        input { padding: 12px; font-size: 1rem; border-radius: 5px; border: none; margin-bottom: 10px; width: 200px; text-align: center;}
+        button { padding: 12px 25px; font-size: 1rem; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;}
+        button:active { transform: scale(0.98); }
+        .error { color: #ff6b6b; margin-top: 15px; font-weight: bold; }
         
-        #menu-links { display: none; } /* Oculto por defecto */
-        
-        input { padding: 10px; font-size: 1rem; border-radius: 5px; border: none; }
-        button { padding: 10px 20px; font-size: 1rem; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .error { color: red; margin-top: 10px; display: none;}
+        /* Estilos del Menú */
+        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; margin-top: 20px;}
+        .btn { background-color: #007bff; color: white; padding: 20px; text-decoration: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-urgente { background-color: #dc3545; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h2>🔒 Acceso Requerido</h2>
-        <p>Introduce el PIN de planta:</p>
-        <input type="password" id="passwordInput" placeholder="PIN" onkeyup="checkEnter(event)">
-        <button onclick="verificarPassword()">Entrar</button>
-        <p id="error-msg" class="error">PIN Incorrecto</p>
+        <h2>🔒 Datwyler Access</h2>
+        <p>Ingrese PIN de seguridad:</p>
+        <input type="password" id="passwordInput" placeholder="****" inputmode="numeric" onkeyup="checkEnter(event)">
+        <br>
+        <button onclick="verificarHash()">Desbloquear</button>
+        <p id="error-msg" class="error hidden">⛔ PIN Incorrecto</p>
     </div>
 
-    <div id="menu-links">
-        <h1>📋 Menú de Planta</h1>
+    <div id="menu-links" class="hidden">
+        <h1>✅ Acceso Concedido</h1>
         <div class="container">
-            <a href="https://forms.office.com/e/WgkMNxjZtP" style="display:block; padding:20px; background:blue; color:white; margin:10px; text-decoration:none; border-radius:10px;">
-                📝 Orden de mantenimiento
+            
+            <a href="https://forms.office.com/TU-LINK-AQUI" class="btn">
+                📝 Reporte Producción
+            </a>
+
+            <a href="https://forms.office.com/TU-LINK-AQUI-2" class="btn">
+                🔧 Mantenimiento
+            </a>
+
+            <a href="https://wa.me/521234567890" class="btn btn-urgente">
+                🚨 Supervisor
             </a>
         </div>
     </div>
 
     <script>
-        function verificarPassword() {
-            var input = document.getElementById("passwordInput").value;
-            // CAMBIA "1234" POR TU PIN DESEADO
-            if (input === "1234") {
-                document.getElementById("login-screen").style.display = "none";
-                document.getElementById("menu-links").style.display = "block";
+        const HASH_CORRECTO = "a80b568a237f50391d2f1f974c0d540203a60a7620216447232230386708d775";
+
+        async function verificarHash() {
+            const input = document.getElementById("passwordInput").value;
+            const errorMsg = document.getElementById("error-msg");
+            
+            // Convertimos lo que escribió el usuario a SHA-256
+            const hashCalculado = await sha256(input);
+
+            if (hashCalculado === HASH_CORRECTO) {
+                document.getElementById("login-screen").classList.add("hidden");
+                document.getElementById("menu-links").classList.remove("hidden");
             } else {
-                document.getElementById("error-msg").style.display = "block";
+                errorMsg.classList.remove("hidden");
+                document.getElementById("passwordInput").value = ""; // Limpiar campo
             }
         }
 
+        // Función matemática para crear el Hash (No tocar)
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
         function checkEnter(event) {
-            if (event.key === "Enter") {
-                verificarPassword();
-            }
+            if (event.key === "Enter") verificarHash();
         }
     </script>
 
 </body>
-
 </html>
