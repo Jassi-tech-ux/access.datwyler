@@ -3,80 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Seguro Planta</title>
+    <title>Datwyler Accesos</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; text-align: center; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .hidden { display: none !important; }
-        input { padding: 12px; font-size: 1rem; border-radius: 5px; border: none; margin-bottom: 10px; width: 200px; text-align: center;}
-        button { padding: 12px 25px; font-size: 1rem; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;}
-        button:active { transform: scale(0.98); }
-        .error { color: #ff6b6b; margin-top: 15px; font-weight: bold; }
+        /* ESTILO VISUAL (OSCURO PARA PLANTA) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
         
-        /* Estilos del Menú */
-        .container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; margin-top: 20px;}
-        .btn { background-color: #007bff; color: white; padding: 20px; text-decoration: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .btn-urgente { background-color: #dc3545; }
+        h1 { margin-bottom: 10px; text-align: center; color: #e74c3c; }
+        p { color: #aaa; margin-bottom: 20px; }
+
+        /* INPUT DE CONTRASEÑA */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        
+        input { 
+            padding: 12px; 
+            font-size: 1.1rem; 
+            border-radius: 8px; 
+            border: 1px solid #444; 
+            margin-bottom: 15px; 
+            background: #333; 
+            color: white; 
+            text-align: center;
+            outline: none;
+        }
+        
+        button.login-btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            background-color: #e74c3c; /* Rojo Datwyler */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        
+        button.login-btn:active { transform: scale(0.95); }
+
+        .error { color: #ff4444; margin-top: 10px; display: none; font-weight: bold;}
+        .hidden { display: none !important; }
+
+        /* BOTONES DE ENLACES */
+        #menu-links { width: 100%; max-width: 450px; display: none; animation: fadeIn 0.5s; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-left: 6px solid #3498db; /* Azul por defecto */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .btn:active { transform: scale(0.98); background-color: #34495e; }
+        
+        /* COLORES ESPECIFICOS POR TIPO */
+        .btn-mante { border-left-color: #f39c12; } /* Naranja */
+        .btn-facilities { border-left-color: #27ae60; } /* Verde */
+        .btn-hr { border-left-color: #9b59b6; } /* Morado */
+
+        .icon { font-size: 1.5rem; margin-right: 15px; }
+        .arrow { font-size: 1.2rem; opacity: 0.5; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h2>🔒 Datwyler Access</h2>
-        <p>Ingrese PIN de seguridad:</p>
-        <input type="password" id="passwordInput" placeholder="****" inputmode="numeric" onkeyup="checkEnter(event)">
-        <br>
-        <button onclick="verificarHash()">Desbloquear</button>
-        <p id="error-msg" class="error hidden">⛔ PIN Incorrecto</p>
+        <h2 style="margin-top:0;">🔒 Acceso Datwyler</h2>
+        <p>Introduce la clave de planta</p>
+        <input type="password" id="passwordInput" placeholder="Contraseña" onkeyup="checkEnter(event)">
+        <button class="login-btn" onclick="validar()">INGRESAR</button>
+        <p id="error-msg" class="error">⛔ Clave Incorrecta</p>
     </div>
 
-    <div id="menu-links" class="hidden">
-        <h1>✅ Acceso Concedido</h1>
-        <div class="container">
+    <div id="menu-links">
+        <h1 style="color:white; font-size:1.2rem; margin-bottom:5px;">Hola, Jassiel</h1>
+        <p style="text-align:center; font-size:0.9rem;">Selecciona el formulario:</p>
+
+        <div class="btn-group">
             
-            <a href="https://forms.office.com/TU-LINK-AQUI" class="btn">
-                📝 Reporte Producción
+            <a href="https://forms.cloud.microsoft/e/EVGxHsSv6L" class="btn">
+                <span>⚙️ Orden de Moldes</span> <span class="arrow">➜</span>
             </a>
 
-            <a href="https://forms.office.com/TU-LINK-AQUI-2" class="btn">
-                🔧 Mantenimiento
+            <a href="https://forms.cloud.microsoft/e/WgkMNxjZtP" class="btn btn-mante">
+                <span>🔧 Orden de Mantenimiento</span> <span class="arrow">➜</span>
             </a>
 
-            <a href="https://wa.me/521234567890" class="btn btn-urgente">
-                🚨 Supervisor
+            <a href="https://forms.cloud.microsoft/e/b2NAFdZKZi" class="btn btn-facilities">
+                <span>🏢 Orden de Facilities</span> <span class="arrow">➜</span>
             </a>
+
+            <hr style="border: 0; border-top: 1px solid #444; margin: 10px 0;">
+
+            <a href="https://forms.cloud.microsoft/e/DPjg1QXdNN" class="btn btn-hr">
+                <span>🏖️ Solicitud de Vacaciones</span> <span class="arrow">➜</span>
+            </a>
+
+            <a href="https://forms.cloud.microsoft/e/HA4mAJFAjL" class="btn btn-hr">
+                <span>📄 Solicitud de Permisos</span> <span class="arrow">➜</span>
+            </a>
+
         </div>
+        
+        <p style="margin-top: 30px; font-size: 0.7rem; text-align: center;">IT Services & Process Engineering</p>
     </div>
 
     <script>
-        const HASH_CORRECTO = "a80b568a237f50391d2f1f974c0d540203a60a7620216447232230386708d775";
-
-        async function verificarHash() {
-            const input = document.getElementById("passwordInput").value;
-            const errorMsg = document.getElementById("error-msg");
+        function validar() {
+            // .trim() evita errores si el celular pone un espacio al final
+            var pass = document.getElementById("passwordInput").value.trim();
             
-            // Convertimos lo que escribió el usuario a SHA-256
-            const hashCalculado = await sha256(input);
-
-            if (hashCalculado === HASH_CORRECTO) {
-                document.getElementById("login-screen").classList.add("hidden");
-                document.getElementById("menu-links").classList.remove("hidden");
+            // CONTRASEÑA CONFIGURADA AQUÍ
+            if (pass === "Datwyler2026") {
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("menu-links").style.display = "block";
             } else {
-                errorMsg.classList.remove("hidden");
-                document.getElementById("passwordInput").value = ""; // Limpiar campo
+                document.getElementById("error-msg").style.display = "block";
+                document.getElementById("passwordInput").value = "";
+                document.getElementById("passwordInput").focus();
             }
         }
 
-        // Función matemática para crear el Hash (No tocar)
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
-
         function checkEnter(event) {
-            if (event.key === "Enter") verificarHash();
+            if (event.key === "Enter") {
+                validar();
+            }
         }
     </script>
 
